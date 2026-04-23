@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>VORA RAG UX — 3가지 옵션 비교</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deepest: #0a0a10;
+    --bg-base: #14141c;
+    --bg-elevated: #1c1c28;
+    --bg-card: #232333;
+    --bg-card-hover: #2a2a3c;
+    --border-subtle: #2a2a38;
+    --border-strong: #3a3a4d;
+
+    --text-primary: #f2f2f7;
+    --text-secondary: #a0a0b5;
+    --text-tertiary: #5a5a70;
+
+    --purple-solid: #8a50ff;
+    --purple-hover: #9d6dff;
+    --purple-soft: rgba(138, 80, 255, 0.14);
+    --purple-soft-hover: rgba(138, 80, 255, 0.22);
+    --purple-ring: rgba(138, 80, 255, 0.35);
+    --purple-glow: 0 8px 32px rgba(138, 80, 255, 0.18);
+
+    --green: #4ade80;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+    --pink: #ff5ca8;
+    --yellow: #fbbf24;
+    --red: #f87171;
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg-deepest);
+    color: var(--text-primary);
+    font-family: -apple-system, "SF Pro Display", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* ===== Page Header ===== */
+  .hero h1 {
+    font-size: 30px; font-weight: 800; letter-spacing: -0.02em;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #fff, #c5a4ff);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 15px; color: var(--text-secondary); max-width: 680px;
+  }
+  .hero-sub {
+    margin-top: 16px; padding: 12px 16px;
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 10px; font-size: 13px; color: var(--text-tertiary);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .hero-sub b { color: var(--text-primary); font-weight: 600; }
+
+  /* ===== Tab selector ===== */
+  .tabs {
+    display: flex; gap: 8px; margin: 40px 0 20px;
+    background: var(--bg-elevated); padding: 5px;
+    border-radius: 12px; border: 1px solid var(--border-subtle);
+    width: fit-content;
+  }
+  .tab {
+    background: transparent; border: 0; color: var(--text-secondary);
+    padding: 10px 18px; font-size: 13.5px; font-weight: 600; border-radius: 8px;
+    cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text-primary); }
+  .tab.active {
+    background: var(--purple-solid); color: white;
+    box-shadow: 0 2px 12px rgba(138,80,255,0.35);
+  }
+  .tab .badge {
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    background: rgba(74,222,128,0.2); color: var(--green);
+    font-weight: 700;
+  }
+  .tab.active .badge { background: rgba(255,255,255,0.2); color: white; }
+
+  /* ===== Panel ===== */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .panel-head {
+    padding: 20px 24px; background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle); border-radius: 14px 14px 0 0;
+    border-bottom: 0;
+  }
+  .panel-head h2 {
+    font-size: 19px; font-weight: 700; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .panel-head h2 .tag {
+    font-size: 11px; padding: 3px 8px; border-radius: 5px;
+    font-weight: 700; letter-spacing: 0.04em;
+  }
+  .tag-a { background: rgba(96, 165, 250, 0.2); color: var(--blue); }
+  .tag-b { background: rgba(251, 146, 60, 0.2); color: var(--orange); }
+  .tag-c { background: rgba(74, 222, 128, 0.2); color: var(--green); }
+  .panel-head p {
+    font-size: 13.5px; color: var(--text-secondary);
+  }
+
+  .panel-body {
+    padding: 24px; background: var(--bg-base);
+    border: 1px solid var(--border-subtle); border-top: 0;
+    border-radius: 0 0 14px 14px;
+  }
+
+  /* ===== Mock chat demo ===== */
+  .demo-label {
+    font-size: 11px; color: var(--text-tertiary);
+    font-weight: 700; letter-spacing: 0.08em;
+    margin-bottom: 10px; text-transform: uppercase;
+  }
+  .demo {
+    background: var(--bg-deepest); border: 1px solid var(--border-subtle);
+    border-radius: 14px; padding: 20px; margin-bottom: 20px;
+  }
+
+  .msg {
+    display: flex; gap: 10px; margin-bottom: 18px;
+  }
+  .msg:last-child { margin-bottom: 0; }
+  .msg-av {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  }
+  .msg-av.me { background: linear-gradient(135deg, #6b3fff, #ff5ca8); }
+  .msg-av.ai { background: linear-gradient(135deg, #ff7ab8, #8a50ff); }
+  .msg-body { flex: 1; min-width: 0; }
+  .msg-name {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .msg-text {
+    font-size: 14px; color: var(--text-primary); line-height: 1.6;
+  }
+  .msg-text.bubble {
+    background: var(--purple-soft); display: inline-block;
+    padding: 10px 14px; border-radius: 12px;
+    border: 1px solid rgba(138,80,255,0.2);
+  }
+
+  /* Response source footer (Option B/C) */
+  .resp-source {
+    margin-top: 10px; padding: 10px 12px;
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-size: 12px; color: var(--text-secondary);
+  }
+  .resp-source .mode-badge {
+    background: var(--purple-soft); color: #c5a4ff;
+    padding: 3px 8px; border-radius: 5px; font-weight: 600;
+    font-size: 11px;
+  }
+  .resp-source .file-chip {
+    background: var(--bg-card); padding: 3px 8px; border-radius: 5px;
+    font-size: 11px; display: inline-flex; align-items: center; gap: 4px;
+    color: var(--text-secondary);
+  }
+  .resp-source .alter-btn {
+    margin-left: auto;
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-secondary); padding: 5px 10px;
+    border-radius: 6px; font-size: 11px; cursor: pointer;
+    font-family: inherit;
+  }
+  .resp-source .alter-btn:hover {
+    border-color: var(--purple-solid); color: var(--purple-solid);
+  }
+
+  /* Input variants */
+  .input-card {
+    background: var(--bg-elevated);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 14px 16px 10px;
+  }
+  .input-card:focus-within {
+    border-color: var(--purple-solid);
+    box-shadow: var(--purple-glow);
+  }
+
+  /* Option A — presets as pills above input */
+  .preset-row {
+    display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .preset-pill {
+    background: var(--bg-card); border: 1px solid var(--border-subtle);
+    color: var(--text-secondary); padding: 7px 12px;
+    border-radius: 999px; font-size: 12px; font-weight: 500;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    font-family: inherit; transition: all 0.12s;
+  }
+  .preset-pill:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+  .preset-pill.active {
+    background: var(--purple-solid); color: white; border-color: var(--purple-solid);
+  }
+  .preset-pill.active .desc { color: rgba(255,255,255,0.8); }
+  .preset-pill .desc {
+    font-weight: 400; color: var(--text-tertiary); margin-left: 4px;
+  }
+
+  .input-row {
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .input-field {
+    flex: 1; background: transparent; border: 0; outline: 0;
+    color: var(--text-primary); font-size: 15px; padding: 6px 0;
+    font-family: inherit; resize: none; min-height: 24px;
+  }
+  .input-field::placeholder { color: var(--text-tertiary); }
+  .send-btn {
+    width: 36px; height: 36px; background: var(--purple-solid);
+    border: 0; border-radius: 50%; color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 17px;
+  }
+
+  /* Option B — simple input, no toggle */
+  .input-simple {
+    display: flex; gap: 10px; align-items: center;
+    background: var(--bg-elevated);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 999px;
+    padding: 8px 8px 8px 18px;
+  }
+  .input-simple .input-field { font-size: 14.5px; padding: 4px 0; }
+
+  /* Option C — badge inside input */
+  .mode-badge-btn {
+    background: var(--purple-soft); border: 1px solid rgba(138,80,255,0.3);
+    color: #c5a4ff; padding: 5px 10px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 600; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-right: 8px; flex-shrink: 0;
+  }
+  .mode-badge-btn:hover { background: var(--purple-soft-hover); }
+
+  /* Option C — bottom sheet */
+  .sheet {
+    margin-top: 12px; background: var(--bg-card);
+    border: 1px solid var(--border-strong); border-radius: 12px;
+    padding: 6px; display: none;
+  }
+  .sheet.show { display: block; }
+  .sheet-item {
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--text-primary);
+  }
+  .sheet-item:hover { background: var(--bg-card-hover); }
+  .sheet-item.active {
+    background: var(--purple-soft); color: #c5a4ff;
+  }
+  .sheet-item .ico {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--bg-elevated); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .sheet-item.active .ico { background: rgba(138,80,255,0.25); }
+  .sheet-item .body { flex: 1; }
+  .sheet-item .name { font-weight: 600; margin-bottom: 1px; }
+  .sheet-item .sub { font-size: 11.5px; color: var(--text-tertiary); font-weight: 400; }
+  .sheet-item.active .sub { color: rgba(197,164,255,0.8); }
+  .sheet-item .radio {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--border-strong); flex-shrink: 0;
+  }
+  .sheet-item.active .radio {
+    border-color: var(--purple-solid);
+    background: radial-gradient(circle at center, var(--purple-solid) 40%, transparent 42%);
+  }
+
+  /* ===== Pros/Cons ===== */
+  .pros-cons {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px;
+  }
+  .pc-card {
+    padding: 16px 18px; border-radius: 12px;
+  }
+  .pc-pros { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); }
+  .pc-cons { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); }
+  .pc-card h4 {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    margin-bottom: 10px; text-transform: uppercase;
+  }
+  .pc-pros h4 { color: var(--green); }
+  .pc-cons h4 { color: var(--red); }
+  .pc-card ul { list-style: none; }
+  .pc-card li {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.5;
+    padding-left: 16px; position: relative; margin-bottom: 6px;
+  }
+  .pc-card li::before {
+    content: "•"; position: absolute; left: 4px;
+    color: var(--text-tertiary);
+  }
+
+  /* ===== Comparison matrix ===== */
+  .matrix {
+    margin-top: 40px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px; overflow: hidden;
+  }
+  .matrix-head {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .matrix-head h2 {
+    font-size: 17px; font-weight: 700;
+  }
+  .matrix-head p {
+    margin-top: 4px; font-size: 13px; color: var(--text-secondary);
+  }
+  table.matrix-tbl {
+    width: 100%; border-collapse: collapse;
+  }
+  .matrix-tbl th, .matrix-tbl td {
+    padding: 12px 16px; text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px;
+  }
+  .matrix-tbl th {
+    background: var(--bg-base); font-weight: 600;
+    color: var(--text-secondary); font-size: 12px;
+    letter-spacing: 0.03em;
+  }
+  .matrix-tbl th:first-child { width: 200px; }
+  .matrix-tbl td { color: var(--text-primary); }
+  .matrix-tbl td.best {
+    background: rgba(74,222,128,0.06);
+    position: relative;
+  }
+  .matrix-tbl td.best::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--green);
+  }
+  .matrix-tbl tr:last-child td { border-bottom: 0; }
+  .rating {
+    display: inline-flex; gap: 2px;
+  }
+  .rating .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong);
+  }
+  .rating .dot.on { background: var(--purple-solid); }
+
+  /* ===== Final recommendation ===== */
+  .rec {
+    margin-top: 32px; padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(138,80,255,0.15), rgba(74,222,128,0.05));
+    border: 1.5px solid rgba(138,80,255,0.3);
+    border-radius: 16px;
+  }
+  .rec-label {
+    font-size: 11px; font-weight: 700; color: #c5a4ff;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .rec h2 {
+    font-size: 22px; font-weight: 700; margin-bottom: 12px;
+  }
+  .rec p {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+    margin-bottom: 10px;
+  }
+  .rec p b { color: var(--text-primary); font-weight: 600; }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <h1>RAG UX · 3가지 옵션 비교</h1>
+    <p>
+      현재 VORA는 <b>FAST/DEEP</b> 토글과 <b>내 지식창고 검색</b> 토글을 우하단 플로팅 패널에 띄워 RAG의 존재를 강조하고 있어요.
+      하지만 RAG 개념 자체가 생소한 사용자에게는 오히려 "뭘 골라야 하지?" 하는 결정 피로를 유발합니다.
+      세 가지 대안을 실제로 조작해보며 비교해보세요.
+    </p>
+    <div class="hero-sub">
+      <div style="font-size: 18px;">💡</div>
+      <div>
+        <b>설계 원칙:</b> "RAG를 설명한다"가 아니라 "고르지 않아도 되게 한다". 강조가 필요하다면 <b>답변 자체에 근거를 붙이는 방식</b>이 토글보다 훨씬 강력해요.
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Tabs ===== -->
+  <div class="tabs">
+    <button class="tab active" onclick="showPanel('a', this)">옵션 A <span class="badge">PRESET</span></button>
+    <button class="tab" onclick="showPanel('b', this)">옵션 B <span class="badge">AUTO</span></button>
+    <button class="tab" onclick="showPanel('c', this)">옵션 C <span class="badge">★ 추천</span></button>
+  </div>
+
+  <!-- ===== Option A ===== -->
+  <div class="panel active" id="panel-a">
+    <div class="panel-head">
+      <h2><span class="tag tag-a">OPTION A</span> 프리셋 3종 · 상황형 라벨</h2>
+      <p>FAST/DEEP와 지식창고 ON/OFF를 4가지 조합 중 <b>3개 프리셋</b>으로 통합. 기술 용어 대신 사용 상황으로 라벨링.</p>
+    </div>
+
+    <div class="panel-body">
+      <div class="demo-label">Before — 현재 VORA</div>
+      <div class="demo">
+        <div class="msg">
+          <div class="msg-av me"></div>
+          <div class="msg-body">
+            <div class="msg-name">형용준</div>
+            <div class="msg-text bubble">내가 지난번에 올린 창업 계획서 기준으로 피칭 구조 만들어줘</div>
+          </div>
+        </div>
+        <div style="padding: 10px 14px; background: var(--bg-card); border-radius: 10px; color: var(--text-tertiary); font-size: 12px; text-align: center;">
+          (우하단 토글: 지식창고 ☑ · FAST ◉ DEEP ○ — 사용자가 RAG를 몰라서 그냥 기본으로 전송)
+        </div>
+      </div>
+
+      <div class="demo-label">After — 옵션 A</div>
+      <div class="demo">
+        <div class="msg">
+          <div class="msg-av me"></div>
+          <div class="msg-body">
+            <div class="msg-name">형용준</div>
+            <div class="msg-text bubble">내가 지난번에 올린 창업 계획서 기준으로 피칭 구조 만들어줘</div>
+          </div>
+        </div>
+        <div class="input-card">
+          <div class="preset-row" id="preset-a">
+            <button class="preset-pill" data-p="fast">⚡ 빠른 답변 <span class="desc">· 가벼운 질문</span></button>
+            <button class="preset-pill active" data-p="balanced">🎯 균형 <span class="desc">· 기본 · 내 자료 포함</span></button>
+            <button class="preset-pill" data-p="deep">🔍 정확한 답변 <span class="desc">· 중요한 답</span></button>
+          </div>
+          <div class="input-row">
+            <textarea class="input-field" placeholder="AI와 대화를 시작하세요..." rows="1"></textarea>
+            <button class="send-btn">↑</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pc-card pc-pros">
+          <h4>✓ 장점</h4>
+          <ul>
+            <li>"FAST/DEEP/RAG" 같은 기술 용어가 사라짐 — 사용 상황으로 이해</li>
+            <li>선택지가 4개→3개로 줄어 인지 부담 감소</li>
+            <li>프리셋이라 조합 오류 없음 (DEEP+지식창고 OFF 같은 애매한 조합)</li>
+          </ul>
+        </div>
+        <div class="pc-card pc-cons">
+          <h4>✕ 단점</h4>
+          <ul>
+            <li>여전히 <b>매번 선택</b>해야 함 — 기본값을 "균형"으로 숨기면 결국 변경을 안 함</li>
+            <li>왜 이 답변이 나왔는지 사후에 알 수 없음 (근거 부재)</li>
+            <li>입력창 상단이 pill로 차 있어 "먼저 고르고 적어라"는 압박</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Option B ===== -->
+  <div class="panel" id="panel-b">
+    <div class="panel-head">
+      <h2><span class="tag tag-b">OPTION B</span> 자동 + 사후 근거 표시</h2>
+      <p>사용자는 아무것도 선택하지 않음. AI가 질문 유형에 따라 자동으로 결정하고, <b>답변 하단에 "어떻게 답했는지"</b>를 표시.</p>
+    </div>
+
+    <div class="panel-body">
+      <div class="demo-label">After — 옵션 B</div>
+      <div class="demo">
+        <div class="msg">
+          <div class="msg-av me"></div>
+          <div class="msg-body">
+            <div class="msg-name">형용준</div>
+            <div class="msg-text bubble">내가 지난번에 올린 창업 계획서 기준으로 피칭 구조 만들어줘</div>
+          </div>
+        </div>
+        <div class="msg">
+          <div class="msg-av ai"></div>
+          <div class="msg-body">
+            <div class="msg-name">형용준 AI</div>
+            <div class="msg-text">
+              올려주신 창업 계획서를 기준으로 <b>3분 엘리베이터 피치</b> 구조를 짜봤어요. 문제 정의 → 솔루션 차별성 → 시장 규모 → 비즈니스 모델 → 팀 역량 순으로...
+            </div>
+            <div class="resp-source">
+              <span class="mode-badge">🔍 정확한 답변</span>
+              <span>내 자료 2개 참조:</span>
+              <span class="file-chip">📄 창업계획서_2025.pdf</span>
+              <span class="file-chip">📄 HSS117스타트업101.pages</span>
+              <button class="alter-btn" onclick="toggleAlter(this)">⚙ 다르게 답해줘</button>
+            </div>
+            <div id="alter-panel" style="display: none; margin-top: 8px; padding: 10px 12px; background: var(--bg-card); border-radius: 10px;">
+              <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; font-weight: 600;">다른 방식으로 답변받기</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="preset-pill">⚡ 더 간결하게</button>
+                <button class="preset-pill">📄 내 자료 빼고 일반 지식으로</button>
+                <button class="preset-pill">🔍 더 꼼꼼하게</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 14px;">
+          <div class="input-simple">
+            <input class="input-field" placeholder="메시지를 입력하세요..." />
+            <button class="send-btn">↑</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pc-card pc-pros">
+          <h4>✓ 장점</h4>
+          <ul>
+            <li>입력 단계에서 <b>아무것도 선택할 필요 없음</b> — 가장 낮은 진입 장벽</li>
+            <li>근거 표시로 <b>신뢰 신호</b> 생성 ("진짜 내 자료를 봤구나")</li>
+            <li>"다르게 답해줘" 버튼으로 불만족 시에만 가벼운 재선택</li>
+            <li>RAG를 자연스럽게 학습 — 근거 칩을 보며 점진적으로 개념 체득</li>
+          </ul>
+        </div>
+        <div class="pc-card pc-cons">
+          <h4>✕ 단점</h4>
+          <ul>
+            <li>AI의 자동 판단이 <b>틀리면</b> 사용자는 "왜 이렇게 답했지?"에서 시작해야 함 (재시도 비용)</li>
+            <li>속도/비용 우선인 사용자가 매번 DEEP으로 답변 받으면 불만</li>
+            <li>"내가 통제하고 싶다"는 파워 유저에게는 답답할 수 있음</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Option C ===== -->
+  <div class="panel" id="panel-c">
+    <div class="panel-head">
+      <h2><span class="tag tag-c">OPTION C ★ 추천</span> 하이브리드 · 자동 기본 + 입력창 내 뱃지 + 근거</h2>
+      <p>B의 자동화 + A의 선택권 + 근거 표시를 모두 결합. 평소엔 보이지 않지만, 원할 때 뱃지를 탭해 즉시 변경.</p>
+    </div>
+
+    <div class="panel-body">
+      <div class="demo-label">After — 옵션 C (인터랙티브)</div>
+      <div class="demo">
+        <div class="msg">
+          <div class="msg-av me"></div>
+          <div class="msg-body">
+            <div class="msg-name">형용준</div>
+            <div class="msg-text bubble">내가 지난번에 올린 창업 계획서 기준으로 피칭 구조 만들어줘</div>
+          </div>
+        </div>
+        <div class="msg">
+          <div class="msg-av ai"></div>
+          <div class="msg-body">
+            <div class="msg-name">형용준 AI</div>
+            <div class="msg-text">
+              올려주신 창업 계획서 기준으로 <b>3분 엘리베이터 피치</b> 구조를 짜봤어요. 문제 정의 → 솔루션 차별성 → ...
+            </div>
+            <div class="resp-source">
+              <span class="mode-badge" id="curr-mode-display">🎯 기본 · 내 자료 2개 참조</span>
+              <span class="file-chip">📄 창업계획서_2025.pdf</span>
+              <span class="file-chip">📄 HSS117스타트업101.pages</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrated input with badge -->
+        <div style="margin-top: 16px;">
+          <div class="input-simple">
+            <button class="mode-badge-btn" onclick="toggleSheet()">
+              <span id="curr-mode-icon">🎯</span>
+              <span id="curr-mode-name">기본</span>
+              <span style="opacity: 0.6;">▾</span>
+            </button>
+            <input class="input-field" placeholder="메시지를 입력하세요..." />
+            <button class="send-btn">↑</button>
+          </div>
+
+          <div class="sheet" id="sheet-c">
+            <div class="sheet-item" data-m="fast" onclick="pickMode(this, '⚡', '빠른', 'fast')">
+              <div class="ico">⚡</div>
+              <div class="body">
+                <div class="name">빠른 답변</div>
+                <div class="sub">일반 지식만 · 초단위 응답 · 가벼운 질문</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+            <div class="sheet-item active" data-m="balanced" onclick="pickMode(this, '🎯', '기본', 'balanced')">
+              <div class="ico">🎯</div>
+              <div class="body">
+                <div class="name">기본 · 내 자료 포함 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 1px 5px; border-radius: 3px; margin-left: 4px;">AUTO</span></div>
+                <div class="sub">내 지식창고 빠른 검색 · 평소 질문에 추천</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+            <div class="sheet-item" data-m="deep" onclick="pickMode(this, '🔍', '정확', 'deep')">
+              <div class="ico">🔍</div>
+              <div class="body">
+                <div class="name">정확한 답변</div>
+                <div class="sub">모든 자료 꼼꼼히 · 느리지만 정확 · 중요한 답</div>
+              </div>
+              <div class="radio"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pc-card pc-pros">
+          <h4>✓ 장점</h4>
+          <ul>
+            <li>B의 자동화 장점 + A의 명시적 제어권을 모두 확보</li>
+            <li>뱃지가 <b>현재 상태를 1초에 알려줌</b> — 입력 전에 슬쩍 보고 안심 또는 변경</li>
+            <li>근거 칩이 답변 하단에 항상 있어서 RAG를 자연스럽게 학습</li>
+            <li>플로팅 패널이 사라지면서 우하단 공간 확보 — 더 깔끔한 UI</li>
+          </ul>
+        </div>
+        <div class="pc-card pc-cons">
+          <h4>✕ 단점</h4>
+          <ul>
+            <li>구현 복잡도가 A·B보다 살짝 높음 (자동 판단 + 수동 오버라이드 + 근거 표시)</li>
+            <li>뱃지 인식이 안 되면 사용자는 B처럼 사용 (하지만 이건 단점이 아니라 안전망)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Comparison Matrix ===== -->
+  <div class="matrix">
+    <div class="matrix-head">
+      <h2>📊 3가지 옵션 비교표</h2>
+      <p>각 기준에서 가장 나은 옵션이 녹색으로 표시됩니다.</p>
+    </div>
+    <table class="matrix-tbl">
+      <thead>
+        <tr>
+          <th>평가 기준</th>
+          <th>A · 프리셋</th>
+          <th>B · 자동</th>
+          <th>C · 하이브리드</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>진입 장벽</th>
+          <td><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></span> 매번 선택</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 선택 없음</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 선택 없음</td>
+        </tr>
+        <tr>
+          <th>제어권 (파워 유저)</th>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 매번 명시적</td>
+          <td><span class="rating"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> 사후 수정만</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 뱃지로 즉시</td>
+        </tr>
+        <tr>
+          <th>답변 신뢰도 (근거 표시)</th>
+          <td><span class="rating"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> 없음</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 풀 표시</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 풀 표시</td>
+        </tr>
+        <tr>
+          <th>RAG 개념 학습 가능성</th>
+          <td><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></span> 이름으로만</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 근거로 학습</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 근거로 학습</td>
+        </tr>
+        <tr>
+          <th>인지 부담 (평소 사용)</th>
+          <td><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></span> 중간</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 낮음</td>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 낮음</td>
+        </tr>
+        <tr>
+          <th>구현 복잡도</th>
+          <td class="best"><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></span> 단순</td>
+          <td><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span></span> 자동 분류 필요</td>
+          <td><span class="rating"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></span> B + 뱃지 UI</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Recommendation ===== -->
+  <div class="rec">
+    <div class="rec-label">★ FINAL RECOMMENDATION</div>
+    <h2>옵션 C · 하이브리드 방식으로 가는 것을 추천</h2>
+    <p>
+      <b>이유:</b> VORA의 RAG 강조 의도(= 사용자가 RAG를 인지하길 바람)는 <b>토글이 아니라 근거 칩으로 훨씬 잘 해결됩니다.</b>
+      "📄 내 자료 2개 참조"라는 사후 표시가 "지식창고 ON 토글"보다 훨씬 강력한 신뢰 신호예요.
+      동시에 제어권이 필요한 순간엔 입력창 뱃지 한 번의 탭으로 변경 가능하니, 초보자와 파워 유저 모두 만족시킬 수 있어요.
+    </p>
+    <p>
+      <b>단계적 출시 전략:</b> 먼저 옵션 B(자동 + 근거)를 1차 릴리스로 내보내 자동 분류 정확도를 실데이터로 튜닝하고,
+      그 다음 뱃지 UI를 추가해 옵션 C로 완성하는 경로가 리스크가 가장 낮아요.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  function showPanel(id, tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    window.scrollTo({ top: tab.getBoundingClientRect().top + window.scrollY - 20, behavior: 'smooth' });
+  }
+
+  // Option A preset pills
+  document.querySelectorAll('#preset-a .preset-pill').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('#preset-a .preset-pill').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+    });
+  });
+
+  // Option B alter toggle
+  function toggleAlter(btn) {
+    const panel = document.getElementById('alter-panel');
+    const isShown = panel.style.display !== 'none';
+    panel.style.display = isShown ? 'none' : 'block';
+  }
+
+  // Option C — bottom sheet
+  function toggleSheet() {
+    document.getElementById('sheet-c').classList.toggle('show');
+  }
+  function pickMode(el, icon, name, key) {
+    document.querySelectorAll('#sheet-c .sheet-item').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('curr-mode-icon').textContent = icon;
+    document.getElementById('curr-mode-name').textContent = name;
+    const display = document.getElementById('curr-mode-display');
+    if (key === 'fast') display.textContent = '⚡ 빠른 답변 · 일반 지식';
+    if (key === 'balanced') display.textContent = '🎯 기본 · 내 자료 2개 참조';
+    if (key === 'deep') display.textContent = '🔍 정확한 답변 · 내 자료 9개 검토';
+    setTimeout(() => document.getElementById('sheet-c').classList.remove('show'), 300);
+  }
+</script>
+
+</body>
+</html>

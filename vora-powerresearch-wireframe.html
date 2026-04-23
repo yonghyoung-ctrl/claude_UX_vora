@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>VORA 파워리서치 (PDCA) 와이어프레임</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deepest: #0a0a10;
+    --bg-base: #14141c;
+    --bg-elevated: #1c1c28;
+    --bg-card: #232333;
+    --bg-card-hover: #2a2a3c;
+    --border-subtle: #2a2a38;
+    --border-strong: #3a3a4d;
+
+    --text-primary: #f2f2f7;
+    --text-secondary: #a0a0b5;
+    --text-tertiary: #5a5a70;
+
+    --purple-solid: #8a50ff;
+    --purple-hover: #9d6dff;
+    --purple-soft: rgba(138, 80, 255, 0.14);
+    --purple-soft-hover: rgba(138, 80, 255, 0.22);
+    --purple-ring: rgba(138, 80, 255, 0.35);
+    --purple-glow: 0 8px 32px rgba(138, 80, 255, 0.18);
+
+    --green: #4ade80;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+    --pink: #ff5ca8;
+    --yellow: #fbbf24;
+    --red: #f87171;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg-deepest);
+    color: var(--text-primary);
+    font-family: -apple-system, "SF Pro Display", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow: hidden;
+  }
+
+  .app { display: flex; height: 100vh; width: 100vw; }
+
+  /* ============ LEFT NAV ============ */
+  .nav {
+    width: 72px; background: var(--bg-base);
+    border-right: 1px solid var(--border-subtle);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 0; flex-shrink: 0;
+  }
+  .nav-logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #8a50ff, #ff7ab8);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: white; margin-bottom: 24px;
+  }
+  .nav-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #6b3fff, #ff5ca8);
+    margin-bottom: 4px; border: 2px solid var(--purple-solid);
+  }
+  .nav-level {
+    font-size: 10px; background: var(--purple-solid); color: white;
+    padding: 2px 6px; border-radius: 6px; margin-bottom: 24px; font-weight: 600;
+  }
+  .nav-items { display: flex; flex-direction: column; gap: 4px; align-items: center; flex: 1; }
+  .nav-item {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary); cursor: pointer; font-size: 18px;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
+  .nav-item.active { color: var(--purple-solid); background: var(--purple-soft); }
+  .nav-item.active::before {
+    content: ""; position: absolute; left: -16px; top: 10px; bottom: 10px;
+    width: 3px; background: var(--purple-solid); border-radius: 0 2px 2px 0;
+  }
+  .nav-bottom { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+
+  /* ============ MAIN ============ */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+  .topbar {
+    height: 60px; border-bottom: 1px solid var(--border-subtle);
+    padding: 0 28px; display: flex; align-items: center; gap: 16px;
+    flex-shrink: 0; background: var(--bg-base);
+  }
+  .topbar .back {
+    width: 36px; height: 36px; background: transparent; border: 0;
+    border-radius: 8px; color: var(--text-secondary); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .topbar .back:hover { background: var(--bg-elevated); color: var(--text-primary); }
+  .topbar .mode-pill {
+    background: rgba(96, 165, 250, 0.15); color: var(--blue);
+    font-size: 12px; padding: 4px 10px; border-radius: 6px;
+    font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .topbar .topic {
+    flex: 1; font-size: 15px; font-weight: 600; color: var(--text-primary);
+  }
+  .topbar .topic-sub {
+    font-size: 12px; color: var(--text-tertiary); margin-left: 6px; font-weight: 400;
+  }
+  .topbar .right-acts { display: flex; gap: 4px; }
+  .icon-btn {
+    width: 36px; height: 36px; background: transparent; border: 0;
+    border-radius: 8px; color: var(--text-secondary); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .icon-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  .content {
+    flex: 1; overflow-y: auto; padding: 0;
+  }
+  .content::-webkit-scrollbar { width: 8px; }
+  .content::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+  /* ============ Stage Tracker ============ */
+  .stages {
+    padding: 20px 28px 0;
+    display: flex; align-items: center; gap: 0;
+    max-width: 1100px; margin: 0 auto; width: 100%;
+  }
+  .stage {
+    flex: 1; display: flex; flex-direction: column; gap: 8px;
+    cursor: pointer; position: relative;
+    padding-bottom: 20px;
+  }
+  .stage-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stage-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--bg-card); border: 2px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--text-secondary);
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .stage-line {
+    flex: 1; height: 2px; background: var(--border-strong);
+    transition: all 0.2s;
+  }
+  .stage:last-child .stage-line { display: none; }
+  .stage.done .stage-dot {
+    background: var(--green); border-color: var(--green); color: white;
+  }
+  .stage.done .stage-line { background: var(--green); }
+  .stage.active .stage-dot {
+    background: var(--purple-solid); border-color: var(--purple-solid);
+    color: white; box-shadow: 0 0 0 4px var(--purple-ring);
+  }
+  .stage-label {
+    padding-left: 36px; font-size: 12.5px; font-weight: 600;
+    color: var(--text-tertiary);
+  }
+  .stage.active .stage-label { color: var(--purple-solid); }
+  .stage.done .stage-label { color: var(--green); }
+  .stage-sub {
+    padding-left: 36px; font-size: 11px; color: var(--text-disabled);
+    margin-top: -4px;
+  }
+
+  /* ============ Main Board ============ */
+  .board {
+    max-width: 1100px; margin: 0 auto;
+    padding: 20px 28px 60px; width: 100%;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .panel-title {
+    margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px;
+  }
+  .panel-title h2 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .panel-title .sub-badge {
+    font-size: 11px; padding: 3px 8px; border-radius: 5px;
+    font-weight: 700; letter-spacing: 0.04em;
+    background: var(--purple-soft); color: #c5a4ff;
+  }
+  .panel-desc {
+    color: var(--text-secondary); margin-bottom: 24px; font-size: 14px;
+  }
+
+  /* ============ Plan Stage — Step Cards ============ */
+  .steps-wrap {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .step-card {
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 14px; padding: 18px 20px; display: flex; gap: 16px;
+    position: relative; transition: all 0.15s;
+  }
+  .step-card:hover {
+    border-color: var(--border-strong);
+  }
+  .step-card.editing {
+    border-color: var(--purple-solid);
+    box-shadow: 0 0 0 3px var(--purple-ring);
+  }
+  .step-drag {
+    display: flex; flex-direction: column; justify-content: center;
+    color: var(--text-tertiary); cursor: grab; padding: 4px;
+    font-size: 14px; line-height: 1;
+  }
+  .step-drag:hover { color: var(--text-primary); }
+
+  .step-num {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: var(--purple-soft); color: #c5a4ff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step-body { flex: 1; min-width: 0; }
+  .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .step-title {
+    font-size: 15px; font-weight: 600; color: var(--text-primary);
+    background: transparent; border: 0; outline: none; font-family: inherit;
+    padding: 2px 4px; margin: -2px -4px; border-radius: 4px;
+    cursor: text; flex: 1;
+  }
+  .step-title:hover { background: var(--bg-card); }
+  .step-title:focus {
+    background: var(--bg-card);
+    box-shadow: 0 0 0 2px var(--purple-solid);
+  }
+  .step-desc {
+    font-size: 13px; color: var(--text-secondary);
+    line-height: 1.5; margin-bottom: 12px;
+  }
+
+  /* Agent assignment row */
+  .step-agent {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .agent-label {
+    font-size: 11.5px; color: var(--text-tertiary); font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .agent-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--bg-card); padding: 5px 12px 5px 6px;
+    border-radius: 999px; font-size: 12.5px; font-weight: 500;
+    color: var(--text-primary); cursor: pointer; border: 1px solid transparent;
+    transition: all 0.12s; position: relative;
+  }
+  .agent-chip:hover {
+    background: var(--bg-card-hover); border-color: var(--border-strong);
+  }
+  .agent-chip .agent-av {
+    width: 22px; height: 22px; border-radius: 50%;
+  }
+  .agent-chip .agent-av.me { background: linear-gradient(135deg, #6b3fff, #ff5ca8); }
+  .agent-chip .agent-av.luha { background: linear-gradient(135deg, #ff7ab8, #8a50ff); }
+  .agent-chip .agent-av.minhwa { background: linear-gradient(135deg, #60a5fa, #8a50ff); }
+  .agent-chip .agent-av.mihyeon { background: linear-gradient(135deg, #fbbf24, #fb923c); }
+  .agent-chip .chev {
+    color: var(--text-tertiary); font-size: 10px;
+  }
+  .agent-chip .lvl {
+    font-size: 9.5px; background: var(--purple-soft); color: #c5a4ff;
+    padding: 1px 5px; border-radius: 3px; font-weight: 700; margin-left: 2px;
+  }
+
+  .step-meta {
+    margin-left: auto; font-size: 11.5px; color: var(--text-tertiary);
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+
+  .step-actions {
+    display: flex; gap: 4px;
+    opacity: 0; transition: opacity 0.15s;
+  }
+  .step-card:hover .step-actions { opacity: 1; }
+  .step-act-btn {
+    width: 28px; height: 28px; background: transparent; border: 0;
+    border-radius: 6px; color: var(--text-tertiary); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+  }
+  .step-act-btn:hover { background: var(--bg-card); color: var(--text-primary); }
+  .step-act-btn.danger:hover { color: var(--red); }
+
+  /* Connector line between steps */
+  .step-connector {
+    width: 2px; height: 12px; background: var(--border-strong);
+    margin-left: 58px;
+  }
+
+  .add-step-btn {
+    padding: 14px; background: transparent;
+    border: 1.5px dashed var(--border-strong); border-radius: 12px;
+    color: var(--text-tertiary); font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; font-family: inherit;
+  }
+  .add-step-btn:hover {
+    border-color: var(--purple-solid); color: var(--purple-solid);
+    background: var(--purple-soft);
+  }
+
+  /* Plan footer */
+  .plan-footer {
+    margin-top: 24px; padding: 20px;
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .plan-summary {
+    flex: 1; font-size: 13px; color: var(--text-secondary);
+  }
+  .plan-summary b { color: var(--text-primary); font-weight: 600; }
+  .btn {
+    border: 0; padding: 11px 18px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-primary { background: var(--purple-solid); color: white; }
+  .btn-primary:hover { background: var(--purple-hover); }
+  .btn-ghost {
+    background: transparent; color: var(--text-secondary);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-ghost:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  /* ============ Do Stage ============ */
+  .do-step {
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
+  }
+  .do-step.running {
+    border-color: var(--purple-solid);
+    box-shadow: 0 0 0 3px var(--purple-ring);
+  }
+  .do-step.done {
+    opacity: 0.8;
+  }
+  .do-step-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  }
+  .do-status {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .do-status.done { background: var(--green); color: white; }
+  .do-status.running { background: var(--purple-solid); color: white; }
+  .do-status.pending { background: var(--bg-card); color: var(--text-tertiary); }
+  .do-step-title {
+    font-size: 15px; font-weight: 600; color: var(--text-primary); flex: 1;
+  }
+  .do-step-agent {
+    font-size: 12px; color: var(--text-tertiary);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .do-step-agent .av {
+    width: 20px; height: 20px; border-radius: 50%;
+  }
+  .do-output {
+    margin-top: 8px; padding: 12px 14px;
+    background: var(--bg-deepest); border: 1px solid var(--border-subtle);
+    border-radius: 10px; font-size: 13px; color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .do-output b { color: var(--text-primary); }
+  .do-step.running .do-output::after {
+    content: "▋"; display: inline-block; color: var(--purple-solid);
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .do-controls {
+    margin-top: 20px; padding: 16px 20px;
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .do-progress { flex: 1; }
+  .do-progress-label {
+    font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;
+    display: flex; justify-content: space-between;
+  }
+  .do-progress-bar {
+    height: 6px; background: var(--bg-card); border-radius: 999px;
+    overflow: hidden;
+  }
+  .do-progress-fill {
+    height: 100%; width: 50%; background: var(--purple-solid);
+    border-radius: 999px; transition: width 0.3s;
+  }
+
+  /* ============ Check Stage ============ */
+  .check-step {
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
+  }
+  .check-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  }
+  .check-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--green); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .check-title { flex: 1; font-size: 15px; font-weight: 600; }
+  .check-sub {
+    margin-bottom: 12px; font-size: 12.5px; color: var(--text-tertiary);
+    display: flex; gap: 14px;
+  }
+  .check-output {
+    padding: 14px 16px; background: var(--bg-deepest);
+    border: 1px solid var(--border-subtle); border-radius: 10px;
+    font-size: 13px; color: var(--text-primary); line-height: 1.7;
+  }
+  .check-output ul { margin-left: 18px; margin-top: 6px; }
+  .check-output li { margin-bottom: 4px; color: var(--text-secondary); }
+  .check-actions {
+    margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .ck-btn {
+    padding: 6px 12px; background: var(--bg-card); border: 1px solid transparent;
+    border-radius: 6px; font-size: 12px; color: var(--text-secondary);
+    cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .ck-btn:hover {
+    border-color: var(--purple-solid); color: var(--text-primary);
+  }
+
+  /* ============ Act Stage ============ */
+  .act-summary {
+    background: linear-gradient(135deg, rgba(138,80,255,0.12), rgba(74,222,128,0.04));
+    border: 1.5px solid rgba(138,80,255,0.3);
+    border-radius: 16px; padding: 24px 28px; margin-bottom: 24px;
+  }
+  .act-summary h3 {
+    font-size: 18px; font-weight: 700; margin-bottom: 10px;
+  }
+  .act-summary p {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .act-refine {
+    margin-top: 20px; padding: 16px 20px;
+    background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+  }
+  .act-refine h4 {
+    font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .refine-chips {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .refine-chip {
+    background: var(--purple-soft); border: 1px solid rgba(138,80,255,0.25);
+    color: #d4bcff; padding: 8px 12px; border-radius: 999px;
+    font-size: 12.5px; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .refine-chip:hover {
+    background: var(--purple-soft-hover); color: white;
+  }
+
+  .act-actions {
+    margin-top: 24px; display: flex; gap: 10px;
+  }
+
+  /* ============ Agent Swap Popover ============ */
+  .agent-popover {
+    position: absolute; top: 100%; left: 0; margin-top: 6px;
+    background: var(--bg-card); border: 1px solid var(--border-strong);
+    border-radius: 12px; padding: 6px; width: 260px; z-index: 10;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    display: none;
+  }
+  .agent-popover.show { display: block; }
+  .agent-opt {
+    padding: 10px 12px; border-radius: 8px;
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+  }
+  .agent-opt:hover { background: var(--bg-card-hover); }
+  .agent-opt.active { background: var(--purple-soft); }
+  .agent-opt .av {
+    width: 28px; height: 28px; border-radius: 50%;
+  }
+  .agent-opt .name {
+    font-size: 13px; font-weight: 600; color: var(--text-primary);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .agent-opt .desc {
+    font-size: 11px; color: var(--text-tertiary); margin-top: 1px;
+  }
+  .agent-opt .name .lvl {
+    font-size: 9.5px; background: var(--purple-soft); color: #c5a4ff;
+    padding: 1px 5px; border-radius: 3px; font-weight: 700;
+  }
+
+  /* ============ Annotations ============ */
+  .annot-toggle {
+    position: fixed; top: 12px; right: 12px; z-index: 100;
+    background: var(--bg-card); border: 1px solid var(--border-strong);
+    color: var(--text-primary); padding: 7px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .annot-toggle:hover { background: var(--bg-card-hover); }
+  .annot-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-tertiary); }
+  .annot-toggle.on .dot { background: var(--purple-solid); }
+
+  .annotations { display: none; }
+  .annotations.show { display: block; }
+  .annot {
+    position: fixed; background: rgba(138, 80, 255, 0.95); color: white;
+    padding: 8px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 500;
+    line-height: 1.4; max-width: 240px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    z-index: 99; pointer-events: none;
+  }
+  .annot.tier-supp { background: rgba(96, 165, 250, 0.95); }
+  .annot .num {
+    display: inline-block; background: rgba(255,255,255,0.25);
+    width: 18px; height: 18px; border-radius: 50%; text-align: center;
+    line-height: 18px; font-weight: 700; margin-right: 6px; font-size: 10px;
+  }
+</style>
+</head>
+<body>
+
+<button class="annot-toggle" id="annotToggle" onclick="toggleAnnot()">
+  <span class="dot"></span><span>주석 보기</span>
+</button>
+
+<div class="annotations" id="annotations">
+  <div class="annot" style="top: 140px; left: 50%; margin-left: -320px;">
+    <span class="num">1</span>PDCA 4단계를 상단 트래커로 명시. 채팅이 아닌 "워크플로우"임을 시각적으로 선언
+  </div>
+  <div class="annot" style="top: 260px; left: 50%; margin-left: -300px;">
+    <span class="num">2</span>각 단계를 카드로 분리. 제목은 인플레이스 편집, 드래그로 순서 변경
+  </div>
+  <div class="annot" style="top: 380px; left: 50%; margin-left: 60px;">
+    <span class="num">3</span>단계별 AI 할당이 핵심 UX. 칩을 탭하면 친구 AI 중 스왑. Lv 뱃지로 역량 가늠
+  </div>
+  <div class="annot tier-supp" style="bottom: 260px; left: 50%; margin-left: -300px;">
+    <span class="num">4</span>상단 탭으로 Do/Check/Act 단계 미리보기 가능 — 사용자가 전체 여정을 이해
+  </div>
+  <div class="annot tier-supp" style="bottom: 100px; right: 60px;">
+    <span class="num">5</span>Plan 승인 시 단일 CTA [🚀 이 계획으로 시작]. 결정 지점이 명확
+  </div>
+</div>
+
+<div class="app">
+  <!-- LEFT NAV -->
+  <aside class="nav">
+    <div class="nav-logo">V</div>
+    <div class="nav-avatar"></div>
+    <div class="nav-level">Lv.5</div>
+    <div class="nav-items">
+      <div class="nav-item" title="홈">⌂</div>
+      <div class="nav-item active" title="채팅·리서치">💬</div>
+      <div class="nav-item" title="도구">⚒</div>
+      <div class="nav-item" title="보관함">▤</div>
+    </div>
+    <div class="nav-bottom">
+      <div class="nav-item" title="친구 초대">⊕</div>
+      <div class="nav-item" title="설정">⚙</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <button class="back">←</button>
+      <span class="mode-pill">🔍 파워리서치</span>
+      <div class="topic">
+        경쟁사 BM 분석
+        <span class="topic-sub">· 4단계 · 예상 12분</span>
+      </div>
+      <div class="right-acts">
+        <button class="icon-btn" title="북마크">☆</button>
+        <button class="icon-btn" title="공유">↗</button>
+        <button class="icon-btn" title="더보기">⋯</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- STAGE TRACKER -->
+      <div class="stages">
+        <div class="stage active" onclick="showPanel('plan', this)" data-stage="plan">
+          <div class="stage-row">
+            <div class="stage-dot">1</div>
+            <div class="stage-line"></div>
+          </div>
+          <div class="stage-label">📋 계획 (Plan)</div>
+          <div class="stage-sub">실행 전 검토 · 진행 중</div>
+        </div>
+        <div class="stage" onclick="showPanel('do', this)" data-stage="do">
+          <div class="stage-row">
+            <div class="stage-dot">2</div>
+            <div class="stage-line"></div>
+          </div>
+          <div class="stage-label">🚀 실행 (Do)</div>
+          <div class="stage-sub">AI들이 단계별 수행</div>
+        </div>
+        <div class="stage" onclick="showPanel('check', this)" data-stage="check">
+          <div class="stage-row">
+            <div class="stage-dot">3</div>
+            <div class="stage-line"></div>
+          </div>
+          <div class="stage-label">🔎 검토 (Check)</div>
+          <div class="stage-sub">결과 확인</div>
+        </div>
+        <div class="stage" onclick="showPanel('act', this)" data-stage="act">
+          <div class="stage-row">
+            <div class="stage-dot">4</div>
+            <div class="stage-line"></div>
+          </div>
+          <div class="stage-label">✨ 보완 (Act)</div>
+          <div class="stage-sub">최종 정리 · 재실행</div>
+        </div>
+      </div>
+
+      <!-- BOARD -->
+      <div class="board">
+
+        <!-- ============ PLAN PANEL ============ -->
+        <div class="panel active" id="panel-plan">
+          <div class="panel-title">
+            <h2>계획 단계</h2>
+            <span class="sub-badge">PLAN</span>
+          </div>
+          <p class="panel-desc">
+            AI가 주제를 분석해 초안을 만들었어요. <b>단계를 편집</b>하거나 <b>담당 AI를 바꿀 수</b> 있어요. 준비되면 실행을 시작하세요.
+          </p>
+
+          <div class="steps-wrap">
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-drag">⋮⋮</div>
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-header">
+                  <input class="step-title" value="시장 범위 정의 및 대상 세그먼트 도출">
+                  <div class="step-actions">
+                    <button class="step-act-btn" title="설명 편집">✏️</button>
+                    <button class="step-act-btn danger" title="삭제">🗑</button>
+                  </div>
+                </div>
+                <div class="step-desc">
+                  타깃 시장을 지리적·인구통계·제품 카테고리 기준으로 좁히고, 2~3개 주요 세그먼트를 정의해요.
+                </div>
+                <div class="step-agent">
+                  <span class="agent-label">담당</span>
+                  <div class="agent-chip" onclick="togglePop(event, this)">
+                    <div class="agent-av me"></div>
+                    <span>형용준 AI</span>
+                    <span class="lvl">Lv.5</span>
+                    <span class="chev">▼</span>
+                    <div class="agent-popover">
+                      <div class="agent-opt active">
+                        <div class="av me" style="background: linear-gradient(135deg, #6b3fff, #ff5ca8);"></div>
+                        <div><div class="name">형용준 AI (나) <span class="lvl">Lv.5</span></div>
+                        <div class="desc">창업·소셜네트워크 전문</div></div>
+                      </div>
+                      <div class="agent-opt">
+                        <div class="av" style="background: linear-gradient(135deg, #ff7ab8, #8a50ff);"></div>
+                        <div><div class="name">김루하 AI <span class="lvl">Lv.5</span></div>
+                        <div class="desc">이미지·영상 크리에이티브</div></div>
+                      </div>
+                      <div class="agent-opt">
+                        <div class="av" style="background: linear-gradient(135deg, #60a5fa, #8a50ff);"></div>
+                        <div><div class="name">정민화 AI <span class="lvl">Lv.3</span></div>
+                        <div class="desc">여행·서비스 기획</div></div>
+                      </div>
+                      <div class="agent-opt">
+                        <div class="av" style="background: linear-gradient(135deg, #fbbf24, #fb923c);"></div>
+                        <div><div class="name">Mihyeon AI <span class="lvl">Lv.5</span></div>
+                        <div class="desc">최신 기술·효율 협업</div></div>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="step-meta">⏱ 약 2분 · 📚 내 자료 2개 활용</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-drag">⋮⋮</div>
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-header">
+                  <input class="step-title" value="주요 경쟁사 식별 및 프로파일링 (5~7개사)">
+                  <div class="step-actions">
+                    <button class="step-act-btn" title="설명 편집">✏️</button>
+                    <button class="step-act-btn danger" title="삭제">🗑</button>
+                  </div>
+                </div>
+                <div class="step-desc">
+                  직접·간접 경쟁사를 웹 리서치로 수집. 각 사의 설립연도, 규모, 핵심 제품, 투자 이력을 정리.
+                </div>
+                <div class="step-agent">
+                  <span class="agent-label">담당</span>
+                  <div class="agent-chip" onclick="togglePop(event, this)">
+                    <div class="agent-av minhwa"></div>
+                    <span>정민화 AI</span>
+                    <span class="lvl">Lv.3</span>
+                    <span class="chev">▼</span>
+                  </div>
+                  <span class="step-meta">⏱ 약 3분 · 🌐 웹 리서치</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-drag">⋮⋮</div>
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-header">
+                  <input class="step-title" value="각사 비즈니스 모델 해부 (BM Canvas 기준)">
+                  <div class="step-actions">
+                    <button class="step-act-btn" title="설명 편집">✏️</button>
+                    <button class="step-act-btn danger" title="삭제">🗑</button>
+                  </div>
+                </div>
+                <div class="step-desc">
+                  Value Proposition, Revenue Stream, Key Resources 등 9개 블록으로 각 사를 분해. 크리에이티브 관점 포함.
+                </div>
+                <div class="step-agent">
+                  <span class="agent-label">담당</span>
+                  <div class="agent-chip" onclick="togglePop(event, this)">
+                    <div class="agent-av luha"></div>
+                    <span>김루하 AI</span>
+                    <span class="lvl">Lv.5</span>
+                    <span class="chev">▼</span>
+                  </div>
+                  <span class="step-meta">⏱ 약 4분 · 📊 차트 생성 도구</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+              <div class="step-drag">⋮⋮</div>
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <div class="step-header">
+                  <input class="step-title" value="비교 프레임 구축 및 내 사업 포지셔닝 제안">
+                  <div class="step-actions">
+                    <button class="step-act-btn" title="설명 편집">✏️</button>
+                    <button class="step-act-btn danger" title="삭제">🗑</button>
+                  </div>
+                </div>
+                <div class="step-desc">
+                  공통점·차이점 매트릭스로 묶고, 내 비즈니스가 들어갈 포지셔닝 공간을 제안.
+                </div>
+                <div class="step-agent">
+                  <span class="agent-label">담당</span>
+                  <div class="agent-chip" onclick="togglePop(event, this)">
+                    <div class="agent-av me"></div>
+                    <span>형용준 AI</span>
+                    <span class="lvl">Lv.5</span>
+                    <span class="chev">▼</span>
+                  </div>
+                  <span class="step-meta">⏱ 약 3분 · 📚 내 자료 활용</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <button class="add-step-btn">+ 단계 추가</button>
+
+          <div class="plan-footer">
+            <div class="plan-summary">
+              <b>4단계 · 예상 12분 · 3명의 AI 협업</b><br>
+              <span style="font-size: 12px;">실행 시 단계별로 알림이 오고, 언제든 일시정지할 수 있어요.</span>
+            </div>
+            <button class="btn btn-ghost">↻ AI가 다시 계획</button>
+            <button class="btn btn-primary">🚀 이 계획으로 시작</button>
+          </div>
+        </div>
+
+        <!-- ============ DO PANEL ============ -->
+        <div class="panel" id="panel-do">
+          <div class="panel-title">
+            <h2>실행 중</h2>
+            <span class="sub-badge" style="background: rgba(96,165,250,0.2); color: var(--blue);">DO · 2 / 4</span>
+          </div>
+          <p class="panel-desc">
+            각 AI가 할당된 단계를 실행하고 있어요. 실시간으로 결과를 확인하거나 <b>일시정지·재시작</b>할 수 있어요.
+          </p>
+
+          <div class="do-step done">
+            <div class="do-step-head">
+              <div class="do-status done">✓</div>
+              <div class="do-step-title">1. 시장 범위 정의 및 대상 세그먼트 도출</div>
+              <div class="do-step-agent">
+                <div class="av" style="background: linear-gradient(135deg, #6b3fff, #ff5ca8);"></div>
+                형용준 AI · 1분 52초
+              </div>
+            </div>
+            <div class="do-output">
+              <b>도출된 3개 세그먼트:</b> (1) 한국 MZ 여성 대상 뷰티 구독 (연 3.2조원), (2) B2B SMB 자동화 SaaS (연 8천억원), (3) 글로벌 인디 개발자 커뮤니티 도구 (연 1.2조원) — 자세한 근거는 펼쳐보기.
+            </div>
+          </div>
+
+          <div class="do-step running">
+            <div class="do-step-head">
+              <div class="do-status running">⟳</div>
+              <div class="do-step-title">2. 주요 경쟁사 식별 및 프로파일링</div>
+              <div class="do-step-agent">
+                <div class="av" style="background: linear-gradient(135deg, #60a5fa, #8a50ff);"></div>
+                정민화 AI · 진행 중
+              </div>
+            </div>
+            <div class="do-output">
+              세그먼트 (1) 뷰티 구독 쪽에서 6개사 수집 완료. 현재 투자 라운드 및 최신 DAU 데이터를 찾고 있어요
+            </div>
+          </div>
+
+          <div class="do-step">
+            <div class="do-step-head">
+              <div class="do-status pending">3</div>
+              <div class="do-step-title">3. 각사 비즈니스 모델 해부</div>
+              <div class="do-step-agent">
+                <div class="av" style="background: linear-gradient(135deg, #ff7ab8, #8a50ff);"></div>
+                김루하 AI · 대기 중
+              </div>
+            </div>
+          </div>
+
+          <div class="do-step">
+            <div class="do-step-head">
+              <div class="do-status pending">4</div>
+              <div class="do-step-title">4. 비교 프레임 구축 및 포지셔닝 제안</div>
+              <div class="do-step-agent">
+                <div class="av" style="background: linear-gradient(135deg, #6b3fff, #ff5ca8);"></div>
+                형용준 AI · 대기 중
+              </div>
+            </div>
+          </div>
+
+          <div class="do-controls">
+            <div class="do-progress">
+              <div class="do-progress-label">
+                <span>진행 상황</span>
+                <span><b>2</b> / 4 단계 · 남은 시간 약 7분</span>
+              </div>
+              <div class="do-progress-bar"><div class="do-progress-fill"></div></div>
+            </div>
+            <button class="btn btn-ghost">⏸ 일시정지</button>
+          </div>
+        </div>
+
+        <!-- ============ CHECK PANEL ============ -->
+        <div class="panel" id="panel-check">
+          <div class="panel-title">
+            <h2>결과 검토</h2>
+            <span class="sub-badge" style="background: rgba(74,222,128,0.2); color: var(--green);">CHECK</span>
+          </div>
+          <p class="panel-desc">
+            단계별 결과를 훑어보고, 만족스럽지 않은 단계만 <b>재실행</b>하거나 <b>담당 AI를 바꿔</b> 다시 시도할 수 있어요.
+          </p>
+
+          <div class="check-step">
+            <div class="check-head">
+              <div class="check-num">1</div>
+              <div class="check-title">시장 범위 정의 및 대상 세그먼트 도출</div>
+            </div>
+            <div class="check-sub">
+              <span>👤 형용준 AI</span>
+              <span>⏱ 1분 52초</span>
+              <span>📄 내 자료 2개 참조</span>
+            </div>
+            <div class="check-output">
+              3개 세그먼트가 도출됨:
+              <ul>
+                <li>한국 MZ 여성 대상 뷰티 구독 (TAM 3.2조)</li>
+                <li>B2B SMB 자동화 SaaS (TAM 8천억)</li>
+                <li>글로벌 인디 개발자 커뮤니티 도구 (TAM 1.2조)</li>
+              </ul>
+            </div>
+            <div class="check-actions">
+              <button class="ck-btn">👍 만족</button>
+              <button class="ck-btn">🔄 다시 실행</button>
+              <button class="ck-btn">🤖 다른 AI로 재실행</button>
+              <button class="ck-btn">✏️ 수정 요청</button>
+            </div>
+          </div>
+
+          <div class="check-step">
+            <div class="check-head">
+              <div class="check-num">2</div>
+              <div class="check-title">주요 경쟁사 식별 및 프로파일링</div>
+            </div>
+            <div class="check-sub">
+              <span>👤 정민화 AI</span>
+              <span>⏱ 2분 41초</span>
+              <span>🌐 웹 리서치 18개 소스</span>
+            </div>
+            <div class="check-output">
+              주요 경쟁사 6개사 식별: Glossier, Ipsy, Birchbox, 아모레 이니스프리 서브스크립션, 홈플러스 뷰티박스, 미미박스 — 각사 DAU/월매출/투자이력 정리 완료.
+            </div>
+            <div class="check-actions">
+              <button class="ck-btn">👍 만족</button>
+              <button class="ck-btn">🔄 다시 실행</button>
+              <button class="ck-btn">🤖 다른 AI로 재실행</button>
+              <button class="ck-btn">✏️ 수정 요청</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ ACT PANEL ============ -->
+        <div class="panel" id="panel-act">
+          <div class="panel-title">
+            <h2>최종 보완</h2>
+            <span class="sub-badge" style="background: rgba(251,146,60,0.2); color: var(--orange);">ACT</span>
+          </div>
+          <p class="panel-desc">
+            4단계 결과를 종합한 최종 리포트예요. 추가로 파고들고 싶은 부분이 있다면 아래에서 선택하세요.
+          </p>
+
+          <div class="act-summary">
+            <h3>📑 최종 리포트: 경쟁사 BM 분석</h3>
+            <p>
+              한국 MZ 여성 대상 뷰티 구독 시장은 <b>Glossier와 미미박스가 양강 구도</b>를 이루고 있으며, 모두 D2C + 구독 + UGC 3축 모델을 공유합니다.
+              그러나 <b>"40대+ 여성 대상 스킨케어 구독"</b>이라는 세그먼트는 현재 공백 상태로, 이 포지션이 가장 유망한 진입점으로 분석됩니다.
+              Key Resource 측면에서는 <b>의료진 네트워크와 임상 데이터</b>가 차별화 요소가 될 것이며...
+            </p>
+          </div>
+
+          <div class="act-refine">
+            <h4>💡 더 깊이 파고들기</h4>
+            <div class="refine-chips">
+              <button class="refine-chip">🔎 40대+ 세그먼트만 심층 리서치</button>
+              <button class="refine-chip">📊 포지셔닝 맵 시각화</button>
+              <button class="refine-chip">💰 예상 유니콘 시나리오 추가</button>
+              <button class="refine-chip">🎤 이 결과로 피칭 덱 만들기</button>
+            </div>
+          </div>
+
+          <div class="act-actions">
+            <button class="btn btn-ghost">📎 PDF로 내보내기</button>
+            <button class="btn btn-ghost">📤 친구에게 공유</button>
+            <button class="btn btn-primary">⭐ 북마크하고 저장</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  function toggleAnnot() {
+    const ann = document.getElementById('annotations');
+    const btn = document.getElementById('annotToggle');
+    ann.classList.toggle('show');
+    btn.classList.toggle('on');
+    btn.querySelector('span:last-child').textContent =
+      ann.classList.contains('show') ? '주석 숨기기' : '주석 보기';
+  }
+
+  function showPanel(key, stageEl) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + key).classList.add('active');
+
+    // Update stage indicator
+    const stages = document.querySelectorAll('.stage');
+    const order = ['plan','do','check','act'];
+    const idx = order.indexOf(key);
+    stages.forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i < idx) s.classList.add('done');
+      if (i === idx) s.classList.add('active');
+    });
+  }
+
+  function togglePop(e, chipEl) {
+    e.stopPropagation();
+    document.querySelectorAll('.agent-popover').forEach(p => {
+      if (p !== chipEl.querySelector('.agent-popover')) p.classList.remove('show');
+    });
+    const pop = chipEl.querySelector('.agent-popover');
+    if (pop) pop.classList.toggle('show');
+  }
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.agent-popover').forEach(p => p.classList.remove('show'));
+  });
+</script>
+
+</body>
+</html>

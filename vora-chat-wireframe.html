@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>VORA 채팅 화면 와이어프레임</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deepest: #0a0a10;
+    --bg-base: #14141c;
+    --bg-elevated: #1c1c28;
+    --bg-card: #232333;
+    --bg-card-hover: #2a2a3c;
+    --border-subtle: #2a2a38;
+    --border-strong: #3a3a4d;
+
+    --text-primary: #f2f2f7;
+    --text-secondary: #a0a0b5;
+    --text-tertiary: #5a5a70;
+    --text-disabled: #404055;
+
+    --purple-solid: #8a50ff;
+    --purple-hover: #9d6dff;
+    --purple-soft: rgba(138, 80, 255, 0.14);
+    --purple-soft-hover: rgba(138, 80, 255, 0.22);
+    --purple-ring: rgba(138, 80, 255, 0.35);
+    --purple-glow: 0 8px 32px rgba(138, 80, 255, 0.18);
+
+    --green: #4ade80;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg-deepest);
+    color: var(--text-primary);
+    font-family: -apple-system, "SF Pro Display", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ============ LEFT NAV (60px) ============ */
+  .nav {
+    width: 72px;
+    background: var(--bg-base);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    flex-shrink: 0;
+  }
+  .nav-logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #8a50ff, #ff7ab8);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: white; font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .nav-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6b3fff, #ff5ca8);
+    margin-bottom: 4px;
+    border: 2px solid var(--purple-solid);
+  }
+  .nav-level {
+    font-size: 10px;
+    background: var(--purple-solid);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+  .nav-items {
+    display: flex; flex-direction: column;
+    gap: 4px; align-items: center;
+    flex: 1;
+  }
+  .nav-item {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
+  .nav-item.active {
+    color: var(--purple-solid);
+    background: var(--purple-soft);
+  }
+  .nav-item.active::before {
+    content: "";
+    position: absolute;
+    left: -16px;
+    top: 10px; bottom: 10px;
+    width: 3px;
+    background: var(--purple-solid);
+    border-radius: 0 2px 2px 0;
+  }
+  .nav-bottom {
+    display: flex; flex-direction: column;
+    gap: 4px; align-items: center;
+  }
+
+  /* ============ CHAT LIST (280px collapsible) ============ */
+  .chatlist {
+    width: 300px;
+    background: var(--bg-base);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: width 0.25s ease;
+    overflow: hidden;
+  }
+  .chatlist.collapsed { width: 0; border-right: 0; }
+
+  .chatlist-header {
+    padding: 16px 16px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .search {
+    flex: 1;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 9px 12px 9px 34px;
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a0a0b5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+  }
+  .search:focus { border-color: var(--purple-solid); }
+  .new-chat-btn {
+    width: 36px; height: 36px;
+    background: var(--purple-solid);
+    border: 0;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 300;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .new-chat-btn:hover { background: var(--purple-hover); }
+
+  .chatlist-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 16px;
+  }
+  .chatlist-scroll::-webkit-scrollbar { width: 6px; }
+  .chatlist-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+  .section-header {
+    padding: 18px 12px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-header.pinned { color: var(--purple-solid); }
+
+  .chat-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.12s;
+    position: relative;
+  }
+  .chat-item:hover { background: var(--bg-elevated); }
+  .chat-item.active {
+    background: var(--purple-soft);
+  }
+  .chat-item.active .chat-title { color: var(--text-primary); }
+
+  .chat-mode {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .chat-mode.chat   { background: rgba(138, 80, 255, 0.18); color: #c5a4ff; }
+  .chat-mode.research { background: rgba(96, 165, 250, 0.18); color: #93c5fd; }
+  .chat-mode.discussion { background: rgba(251, 146, 60, 0.18); color: #fdba74; }
+
+  .chat-body { flex: 1; min-width: 0; }
+  .chat-title {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: 4px;
+  }
+  .chat-item.unread .chat-title {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .chat-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+  .chat-avatars {
+    display: flex;
+  }
+  .chat-avatars .av {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8a50ff, #ff5ca8);
+    margin-left: -4px;
+    border: 1.5px solid var(--bg-base);
+  }
+  .chat-avatars .av:first-child { margin-left: 0; }
+  .unread-dot {
+    width: 8px; height: 8px;
+    background: var(--purple-solid);
+    border-radius: 50%;
+    position: absolute;
+    top: 14px; right: 12px;
+  }
+
+  /* ============ MAIN CHAT (flex 1) ============ */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-deepest);
+    min-width: 0;
+  }
+
+  /* ----- Chat header (NEW) ----- */
+  .chat-header {
+    height: 64px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    background: var(--bg-base);
+  }
+  .toggle-list {
+    width: 36px; height: 36px;
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .toggle-list:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  .chat-context {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .partner-av {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff7ab8, #8a50ff);
+    flex-shrink: 0;
+  }
+  .partner-info { display: flex; flex-direction: column; }
+  .partner-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .partner-name .lvl {
+    background: var(--purple-soft);
+    color: #c5a4ff;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .partner-mode {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 1px;
+  }
+  .mode-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(96, 165, 250, 0.12);
+    color: #93c5fd;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .icon-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  /* ----- Messages scrollable area ----- */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 0 16px;
+  }
+  .messages::-webkit-scrollbar { width: 8px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+  .msg-wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .msg {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .msg-av {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .msg-av.me   { background: linear-gradient(135deg, #6b3fff, #ff5ca8); }
+  .msg-av.ai   { background: linear-gradient(135deg, #ff7ab8, #8a50ff); }
+
+  .msg-content { flex: 1; min-width: 0; }
+  .msg-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .msg-name .time { color: var(--text-tertiary); font-weight: 400; }
+  .msg-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+  .msg-text.user-bubble {
+    background: var(--purple-soft);
+    border: 1px solid rgba(138, 80, 255, 0.2);
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  /* Image grid */
+  .img-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .img-ph {
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #2a2a3c, #1c1c28);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    border: 1px solid var(--border-subtle);
+    position: relative;
+    overflow: hidden;
+  }
+  .img-ph::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 12px,
+      rgba(138, 80, 255, 0.04) 12px,
+      rgba(138, 80, 255, 0.04) 24px
+    );
+  }
+  .img-ph span { position: relative; z-index: 1; }
+
+  /* Tool tags (NOT actionable) */
+  .tool-tags {
+    margin-top: 10px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tool-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-tertiary);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ----- "Next actions" — Supporting tier CTAs ----- */
+  .next-actions {
+    max-width: 820px;
+    margin: 8px auto 16px;
+    padding: 0 32px;
+  }
+  .next-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .next-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .next-chip {
+    background: var(--purple-soft);
+    border: 1px solid rgba(138, 80, 255, 0.25);
+    color: #d4bcff;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .next-chip:hover {
+    background: var(--purple-soft-hover);
+    border-color: var(--purple-solid);
+    color: white;
+    transform: translateY(-1px);
+  }
+  .next-chip .arrow {
+    opacity: 0.6;
+    transition: transform 0.15s;
+  }
+  .next-chip:hover .arrow {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+
+  /* ----- Input area — HERO ----- */
+  .input-region {
+    padding: 8px 32px 24px;
+    flex-shrink: 0;
+  }
+  .input-card {
+    max-width: 820px;
+    margin: 0 auto;
+    background: var(--bg-elevated);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 18px;
+    padding: 14px 16px 10px;
+    transition: all 0.18s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .input-card:focus-within {
+    border-color: var(--purple-solid);
+    box-shadow: var(--purple-glow), 0 0 0 4px var(--purple-ring);
+  }
+  .input-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .input-field {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: inherit;
+    resize: none;
+    padding: 6px 0;
+    min-height: 24px;
+    max-height: 200px;
+  }
+  .input-field::placeholder { color: var(--text-tertiary); }
+
+  .send-btn {
+    width: 38px; height: 38px;
+    background: var(--purple-solid);
+    border: 0;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .send-btn:hover { background: var(--purple-hover); }
+
+  .input-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .ctrl-btn {
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.12s;
+  }
+  .ctrl-btn:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+  .ctrl-btn.active {
+    background: var(--purple-soft);
+    color: #c5a4ff;
+  }
+  .ctrl-divider {
+    width: 1px;
+    height: 16px;
+    background: var(--border-subtle);
+    margin: 0 4px;
+  }
+  .speed-toggle {
+    display: inline-flex;
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 2px;
+  }
+  .speed-toggle button {
+    background: transparent;
+    border: 0;
+    color: var(--text-tertiary);
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+  }
+  .speed-toggle button.active {
+    background: var(--purple-solid);
+    color: white;
+  }
+  .ctrl-spacer { flex: 1; }
+  .agents-pick {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    padding: 4px 8px 4px 6px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .agents-pick:hover { background: var(--bg-card-hover); }
+  .agents-pick .av {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff7ab8, #8a50ff);
+  }
+
+  /* ============ ANNOTATIONS OVERLAY ============ */
+  .annot-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .annot-toggle:hover { background: var(--bg-card-hover); }
+  .annot-toggle .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+  }
+  .annot-toggle.on .dot { background: var(--purple-solid); }
+
+  .annotations { display: none; }
+  .annotations.show { display: block; }
+
+  .annot {
+    position: fixed;
+    background: rgba(138, 80, 255, 0.95);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    max-width: 240px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    z-index: 99;
+    pointer-events: none;
+  }
+  .annot::before {
+    content: "";
+    position: absolute;
+    width: 0; height: 0;
+  }
+  .annot.tier-hero {
+    background: rgba(138, 80, 255, 0.95);
+  }
+  .annot.tier-supp {
+    background: rgba(96, 165, 250, 0.95);
+  }
+  .annot.tier-amb {
+    background: rgba(160, 160, 181, 0.92);
+  }
+  .annot .num {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 18px;
+    font-weight: 700;
+    margin-right: 6px;
+    font-size: 10px;
+  }
+
+  /* Dim overlays for non-active tier when annotations visible */
+  .annotations.show ~ .app .nav,
+  .annotations.show ~ .app .chatlist,
+  .annotations.show ~ .app .tool-tag {
+    /* could add subtle dimming */
+  }
+
+</style>
+</head>
+<body>
+
+<button class="annot-toggle" id="annotToggle" onclick="toggleAnnot()">
+  <span class="dot"></span>
+  <span>주석 보기</span>
+</button>
+
+<div class="annotations" id="annotations">
+  <div class="annot tier-hero" style="top: 80px; left: 380px;">
+    <span class="num">1</span>대화 헤더 신설 — 누구·어떤 모드·어떤 도구가 활성인지 항상 표시
+  </div>
+  <div class="annot tier-amb" style="top: 130px; left: 12px;">
+    <span class="num">2</span>좌측 네비는 64-72px로 압축 (지금은 너무 넓음)
+  </div>
+  <div class="annot tier-supp" style="top: 200px; left: 320px;">
+    <span class="num">3</span>리스트 위계: 📌고정 → 오늘 → 과거. 모드 아이콘은 컬러 배지로
+  </div>
+  <div class="annot tier-supp" style="top: 360px; right: 380px;">
+    <span class="num">4</span>도구 태그(outline) — "라벨"임을 명확히. 클릭 액션과 시각적으로 분리
+  </div>
+  <div class="annot tier-supp" style="bottom: 280px; right: 60px;">
+    <span class="num">5</span>"다음으로 해볼 만한 것" — Soft fill + 화살표로 액션임을 강조 (Supporting CTA)
+  </div>
+  <div class="annot tier-hero" style="bottom: 80px; right: 60px;">
+    <span class="num">6</span>입력창이 진짜 주인공: 큰 카드·그림자·포커스 시 보라 글로우. 모든 컨트롤(FAST/DEEP, 지식창고, AI 선택)을 입력창 내부로 통합
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ============ LEFT NAV ============ -->
+  <aside class="nav">
+    <div class="nav-logo">V</div>
+    <div class="nav-avatar"></div>
+    <div class="nav-level">Lv.5</div>
+    <div class="nav-items">
+      <div class="nav-item" title="홈">⌂</div>
+      <div class="nav-item active" title="채팅">💬</div>
+      <div class="nav-item" title="도구">⚒</div>
+      <div class="nav-item" title="보관함">▤</div>
+    </div>
+    <div class="nav-bottom">
+      <div class="nav-item" title="친구 초대">⊕</div>
+      <div class="nav-item" title="설정">⚙</div>
+    </div>
+  </aside>
+
+  <!-- ============ CHAT LIST ============ -->
+  <aside class="chatlist" id="chatlist">
+    <div class="chatlist-header">
+      <input class="search" placeholder="대화 검색" />
+      <button class="new-chat-btn" title="새 대화">+</button>
+    </div>
+
+    <div class="chatlist-scroll">
+      <div class="section-header pinned">
+        <span>📌 고정</span>
+      </div>
+      <div class="chat-item">
+        <div class="chat-mode chat">💬</div>
+        <div class="chat-body">
+          <div class="chat-title">제품 기획 메모 정리</div>
+          <div class="chat-meta">
+            <div class="chat-avatars"><div class="av"></div></div>
+            <span>김루하 AI</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <span>오늘</span>
+      </div>
+      <div class="chat-item active unread">
+        <div class="chat-mode chat">💬</div>
+        <div class="chat-body">
+          <div class="chat-title">아기 사진을 다양한 일러스트 스타일로 변환</div>
+          <div class="chat-meta">
+            <div class="chat-avatars"><div class="av"></div><div class="av"></div></div>
+            <span>김루하 AI · 방금</span>
+          </div>
+        </div>
+        <span class="unread-dot"></span>
+      </div>
+      <div class="chat-item">
+        <div class="chat-mode chat">💬</div>
+        <div class="chat-body">
+          <div class="chat-title">점심 메뉴 — 성수역 4번 출구와 사무실 사이</div>
+          <div class="chat-meta">
+            <div class="chat-avatars"><div class="av"></div><div class="av"></div></div>
+            <span>김루하 AI +2 · 2시간 전</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <span>2026 — 04 — 16</span>
+      </div>
+      <div class="chat-item">
+        <div class="chat-mode research">☑</div>
+        <div class="chat-body">
+          <div class="chat-title">닭이 먼저인지 달걀이 먼저인지 조사해줘</div>
+          <div class="chat-meta">
+            <span>파워리서치 · 작업 진행</span>
+          </div>
+        </div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-mode discussion">👥</div>
+        <div class="chat-body">
+          <div class="chat-title">닭이 먼저냐 달걀이 먼저냐? 토론</div>
+          <div class="chat-meta">
+            <div class="chat-avatars"><div class="av"></div><div class="av"></div></div>
+            <span>디스커션 · 김루하 +2</span>
+          </div>
+        </div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-mode chat">💬</div>
+        <div class="chat-body">
+          <div class="chat-title">싸이월드 미니미 컨셉은 코알라로 그려줘</div>
+          <div class="chat-meta"><span>형용준 AI</span></div>
+        </div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-mode chat">💬</div>
+        <div class="chat-body">
+          <div class="chat-title">파리 에펠탑 관광 정보 — 위치, 날씨, 호텔, 역사</div>
+          <div class="chat-meta"><span>형용준 AI</span></div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <span>2주 전</span>
+      </div>
+      <div class="chat-item">
+        <div class="chat-mode chat">💬</div>
+        <div class="chat-body">
+          <div class="chat-title">내 MBTI 성향 분석해서 나에 대해 알려줘</div>
+          <div class="chat-meta">
+            <div class="chat-avatars"><div class="av"></div></div>
+            <span>김루하 AI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN CHAT ============ -->
+  <main class="main">
+
+    <!-- Chat Header -->
+    <header class="chat-header">
+      <button class="toggle-list" onclick="toggleChatList()" title="목록 접기/펼치기">☰</button>
+      <div class="chat-context">
+        <div class="partner-av"></div>
+        <div class="partner-info">
+          <div class="partner-name">
+            김루하 AI
+            <span class="lvl">Lv.5</span>
+          </div>
+          <div class="partner-mode">
+            <span class="mode-pill">💬 채팅 모드</span>
+            <span>· 🛠 이미지 생성 도구 활성</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" title="북마크">☆</button>
+        <button class="icon-btn" title="공유">↗</button>
+        <button class="icon-btn" title="더보기">⋯</button>
+      </div>
+    </header>
+
+    <!-- Messages -->
+    <div class="messages">
+      <div class="msg-wrap">
+
+        <div class="msg">
+          <div class="msg-av me"></div>
+          <div class="msg-content">
+            <div class="msg-name">형용준 <span class="time">· 오후 2:14</span></div>
+            <div class="msg-text user-bubble">
+              이 사진을 팝아트 스타일이랑 라인아트 스타일로 변환해줘
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-av ai"></div>
+          <div class="msg-content">
+            <div class="msg-name">김루하 AI <span class="time">· 오후 2:14</span></div>
+            <div class="msg-text">
+              두 가지 스타일로 변환해드렸어요. 팝아트는 채도가 높은 원색과 만화풍 효과를, 라인아트는 부드러운 윤곽선 중심으로 처리했어요.
+            </div>
+            <div class="img-grid">
+              <div class="img-ph"><span>팝아트 스타일</span></div>
+              <div class="img-ph"><span>라인아트 스타일</span></div>
+            </div>
+            <div class="tool-tags">
+              <span class="tool-tag">🛠 이미지로 이미지 생성</span>
+              <span class="tool-tag">스타일 · 팝아트</span>
+              <span class="tool-tag">스타일 · 라인아트</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Next Actions (Supporting CTAs) -->
+    <div class="next-actions">
+      <div class="next-label">💡 다음으로 해볼 만한 것</div>
+      <div class="next-chips">
+        <button class="next-chip">스타일 더 보기 <span class="arrow">→</span></button>
+        <button class="next-chip">다른 인물로 적용 <span class="arrow">→</span></button>
+        <button class="next-chip">이 이미지를 영상으로 <span class="arrow">→</span></button>
+        <button class="next-chip">고해상도로 다시 생성 <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- Input Area (HERO) -->
+    <div class="input-region">
+      <div class="input-card">
+        <div class="input-row">
+          <textarea class="input-field" placeholder="메시지를 입력하세요..." rows="1"></textarea>
+          <button class="send-btn" title="전송">↑</button>
+        </div>
+        <div class="input-controls">
+          <button class="ctrl-btn" title="파일 첨부">📎</button>
+          <button class="ctrl-btn" title="음성 입력">🎤</button>
+          <div class="ctrl-divider"></div>
+          <button class="ctrl-btn active" title="내 지식창고 검색">📚 지식창고</button>
+          <div class="speed-toggle">
+            <button class="active">FAST</button>
+            <button>DEEP</button>
+          </div>
+          <div class="ctrl-spacer"></div>
+          <div class="agents-pick" title="AI 선택">
+            <div class="av"></div>
+            <span>김루하 AI</span>
+            <span style="color: var(--text-tertiary);">▾</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggleChatList() {
+    document.getElementById('chatlist').classList.toggle('collapsed');
+  }
+  function toggleAnnot() {
+    const ann = document.getElementById('annotations');
+    const btn = document.getElementById('annotToggle');
+    ann.classList.toggle('show');
+    btn.classList.toggle('on');
+    btn.querySelector('span:last-child').textContent =
+      ann.classList.contains('show') ? '주석 숨기기' : '주석 보기';
+  }
+  // Auto-grow textarea
+  const ta = document.querySelector('.input-field');
+  ta.addEventListener('input', () => {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
+  });
+</script>
+
+</body>
+</html>

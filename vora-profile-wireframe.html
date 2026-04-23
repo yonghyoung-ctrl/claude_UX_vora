@@ -247,7 +247,7 @@
     font-size: 11px; color: var(--text-tertiary);
   }
 
-  /* ===== Base section: 참고할 정보 / 지식창고 / 한줄소개 ===== */
+  /* ===== AI 페르소나 section: 페르소나 / 내 자료 / 한줄소개 ===== */
   .sec-head {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 12px;
@@ -444,13 +444,13 @@
     <span class="num">3</span>주요 CTA 2개(자료/채팅 업데이트)를 화면 최상단 HERO 영역에 배치. 아이콘·설명으로 차이 명확화
   </div>
   <div class="annot tier-supp" style="top: 700px; left: 50%; margin-left: -280px;">
-    <span class="num">4</span>"AI 베이스 3요소"를 한 행에 병렬. 가장 중요한 "참고할 정보"는 1.4fr로 비중 높임. 공개/비공개 뱃지로 구분
+    <span class="num">4</span>"AI 페르소나 3요소"(페르소나 · 내 자료 · 한 줄 소개)를 한 행에 병렬. 가장 중요한 AI 페르소나는 1.4fr로 비중 높임. 공개/비공개 뱃지로 구분
   </div>
   <div class="annot tier-supp" style="bottom: 320px; right: 60px;">
     <span class="num">5</span>소셜 피드백 블록 — "13건이 얼마나 많은 건지" 크고 굵게. 친구 아바타로 생동감
   </div>
   <div class="annot tier-amb" style="bottom: 140px; left: 50%; margin-left: -280px;">
-    <span class="num">6</span>도구는 Tertiary. 그리드 간소화 + 친구 공유 토글 명시
+    <span class="num">6</span>AI 능력은 Tertiary. 그리드 간소화 + 친구 공유 토글 명시
   </div>
 </div>
 
@@ -464,8 +464,8 @@
     <div class="nav-items">
       <div class="nav-item" title="홈">⌂</div>
       <div class="nav-item" title="채팅">💬</div>
-      <div class="nav-item" title="도구">⚒</div>
-      <div class="nav-item" title="보관함">▤</div>
+      <div class="nav-item" title="AI 능력 스토어">⚒</div>
+      <div class="nav-item" title="라이브러리">▤</div>
     </div>
     <div class="nav-bottom">
       <div class="nav-item" title="친구 초대">⊕</div>
@@ -529,32 +529,32 @@
         <div class="update-ctas">
           <button class="update-cta">
             <div class="update-cta-ico">📄</div>
-            <h3>자료로 알려주기</h3>
-            <p>PDF·문서를 지식창고에 추가하고 내 AI의 베이스에 반영해요</p>
-            <div class="update-cta-meta">지식창고 9개 · 11.5 MB · 마지막 반영 5일 전</div>
+            <h3>자료로 페르소나 보강</h3>
+            <p>PDF·문서를 내 자료에 추가하고 AI 페르소나에 반영해요</p>
+            <div class="update-cta-meta">내 자료 9개 · 11.5 MB · 마지막 반영 5일 전</div>
           </button>
           <button class="update-cta">
             <div class="update-cta-ico">💬</div>
-            <h3>대화로 알려주기</h3>
-            <p>평소 나눈 채팅에서 내 성향과 말투를 뽑아 베이스에 반영해요</p>
+            <h3>대화로 페르소나 보강</h3>
+            <p>평소 나눈 채팅에서 내 성향과 말투를 뽑아 AI 페르소나에 반영해요</p>
             <div class="update-cta-meta">최근 대화 23건 · 마지막 반영 12일 전</div>
           </button>
         </div>
       </div>
 
-      <!-- AI Base: 3 columns -->
+      <!-- AI 페르소나 3요소 -->
       <div class="sec-head">
-        <h2>🧠 내 AI 베이스</h2>
+        <h2>🧠 AI 페르소나 구성 요소</h2>
         <span class="hint">AI가 답할 때 참고하는 재료</span>
       </div>
       <div class="base-grid">
         <div class="base-card primary">
           <div class="base-head-row">
-            <div class="base-title">📝 AI가 참고할 정보</div>
+            <div class="base-title">📝 AI 페르소나</div>
             <span class="base-vis private">🔒 비공개</span>
           </div>
           <div class="base-desc">
-            내 AI의 중심 — 시스템 프롬프트처럼 작동. 친구의 질문에 답할 때도 이 정보를 바탕으로 대답해요. (민감 정보는 노출되지 않음)
+            내 AI의 중심 — 시스템 프롬프트처럼 작동. 친구의 질문에 답할 때도 이 페르소나를 바탕으로 대답해요. (민감 정보는 노출되지 않음)
           </div>
           <div class="base-stat">
             <span>1.2 MB <small>/ 2.0 MB</small></span>
@@ -564,11 +564,11 @@
 
         <div class="base-card">
           <div class="base-head-row">
-            <div class="base-title">📚 지식 창고 (RAG)</div>
+            <div class="base-title">📄 내 자료 (RAG)</div>
             <span class="base-vis private">🔒 비공개</span>
           </div>
           <div class="base-desc">
-            업로드한 문서. 대화 시 실시간 검색으로 활용돼요. 베이스에 반영하려면 [자료로 알려주기] 필요.
+            업로드한 문서. 대화 시 실시간 검색으로 활용돼요. 페르소나에 반영하려면 [자료로 페르소나 보강] 필요.
           </div>
           <div class="base-stat">
             <span>9개 파일</span>
@@ -582,7 +582,7 @@
             <span class="base-vis public">👀 공개</span>
           </div>
           <div class="base-desc">
-            친구들에게 내 프로필에서 보이는 짧은 소개. 베이스 정보의 요약본.
+            친구들에게 내 프로필에서 보이는 짧은 소개. AI 페르소나의 자동 요약본.
           </div>
           <div class="base-stat">
             <span>32자</span>
@@ -600,7 +600,7 @@
         <div class="social-row">
           <div class="social-stats">
             <div class="big">13<span class="unit">번의 대화 · 친구 8명</span></div>
-            <div class="sub">김루하, 정민화, 박종희 외 5명이 나의 AI를 불렀어요</div>
+            <div class="sub">김루하, 정민화, 박종희 외 5명이 내 AI를 불렀어요</div>
           </div>
           <div class="social-avs">
             <div class="av"></div>
@@ -615,8 +615,8 @@
       <!-- Tools -->
       <div class="tools-section">
         <div class="sec-head">
-          <h2>🧰 내 AI가 쓸 수 있는 도구 <span style="font-weight: 400; color: var(--text-tertiary);">· 12개 구독 중</span></h2>
-          <span class="hint"><a href="#" style="color: var(--text-secondary); text-decoration: none;">도구 상점 →</a></span>
+          <h2>🧰 내 AI 능력 <span style="font-weight: 400; color: var(--text-tertiary);">· 12개 구독 중</span></h2>
+          <span class="hint"><a href="#" style="color: var(--text-secondary); text-decoration: none;">AI 능력 스토어 →</a></span>
         </div>
         <div class="tools-grid">
           <div class="tool-chip"><span class="ico">🎵</span>음악 생성</div>
@@ -631,8 +631,8 @@
 
         <div class="share-toggle-row">
           <div class="label">
-            <b>친구 AI가 내 유료 도구 사용 허용</b><br>
-            <span style="font-size: 11.5px;">친구가 나의 AI와 대화할 때 내가 구독한 도구를 이용할 수 있어요</span>
+            <b>친구 AI가 내 유료 능력 사용 허용</b><br>
+            <span style="font-size: 11.5px;">친구가 내 AI와 대화할 때 내가 구독한 능력을 이용할 수 있어요</span>
           </div>
           <div class="toggle-sw" onclick="this.classList.toggle('off')"></div>
         </div>

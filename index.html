@@ -359,7 +359,7 @@
       <span class="meta-chip"><span class="dot"></span>Living Document</span>
       <span class="meta-chip">📅 2026 · 04</span>
       <span class="meta-chip">🎨 와이어프레임 4개</span>
-      <span class="meta-chip">📄 IA 문서 1개</span>
+      <span class="meta-chip">📄 참고 문서 2개</span>
     </div>
   </header>
 
@@ -368,7 +368,7 @@
     <h3>이 작업실에 대해</h3>
     <p>
       현재 VORA의 UX는 <b>모든 요소가 같은 목소리로 말하고 있어서</b> 사용자가 어디부터 봐야 할지 판단하기 어려운 상태예요.
-      아래 산출물들은 <b>"One Hero Per Screen"</b> 원칙과 3레이어 AI 구조(나의 AI · 친구 AI · VORA AI)를 바탕으로
+      아래 산출물들은 <b>"One Hero Per Screen"</b> 원칙과 3레이어 AI 구조(내 AI · 친구 AI · VORA 에이전트)를 바탕으로
       각 화면의 주인공을 명확히 하고, 숨겨진 핵심 기능(소셜 루프, 파워리서치 PDCA)을 전면에 드러낸 재설계안입니다.
     </p>
     <p>
@@ -397,7 +397,7 @@
         </div>
         <div class="card-desc">
           탭 3개를 입력창 내부 모드 선택으로 통합. "오늘 하이라이트" 피드로 친구 AI 소셜 루프를 전면 노출.
-          VORA AI = 실용 에이전트 스트립으로 재프레이밍.
+          VORA 에이전트(실용 목적 AI) 미리보기 스트립으로 재구성.
         </div>
         <div class="card-tags">
           <span class="tag wf">Wireframe</span>
@@ -419,8 +419,8 @@
           </div>
         </div>
         <div class="card-desc">
-          Lv 5→6 진행 바 + 구체 목표("800KB 더")로 게이미피케이션. 자료/채팅 업데이트 2개 CTA를 Hero로.
-          AI 베이스 3요소(참고 정보·지식창고·소개)를 병렬 배치.
+          Lv 5→6 진행 바 + 구체 목표("800KB 더")로 게이미피케이션. "AI 페르소나 보강" CTA를 Hero로.
+          가입 시와 동일하게 AI 페르소나 + 한 줄 소개 + 내 자료를 일관된 배치로.
         </div>
         <div class="card-tags">
           <span class="tag wf">Wireframe</span>
@@ -465,8 +465,8 @@
           </div>
         </div>
         <div class="card-desc">
-          FAST/DEEP + 지식창고 토글을 대체할 3가지 안(A 프리셋 / B 자동+근거 / C 하이브리드★).
-          탭으로 전환하며 실제 인터랙션을 체험 + 6개 기준 비교표.
+          응답 품질·내 자료 참조 토글을 <b>빠른/기본/정확</b> 프리셋 + 근거 표시로 대체할 3가지 안
+          (A 프리셋 / B 자동+근거 / C 하이브리드★). 탭으로 전환하며 실제 인터랙션을 체험 + 6개 기준 비교표.
         </div>
         <div class="card-tags">
           <span class="tag demo">Interactive Demo</span>
@@ -508,21 +508,35 @@
   <section class="section">
     <div class="section-head">
       <h2>📄 레퍼런스 문서</h2>
-      <span class="count">1개</span>
+      <span class="count">2개</span>
       <span class="hint">팀 회의·온보딩용</span>
     </div>
 
-    <a class="doc-card" href="https://github.com/yonghyoung-ctrl/claude_UX_vora/blob/main/vora-information-architecture.md" target="_blank">
-      <div class="doc-ico">📘</div>
-      <div class="doc-body">
-        <div class="doc-title">VORA · 정보구조 & UX 원칙 문서</div>
-        <div class="doc-desc">
-          제품 컨셉(3레이어 AI · 3모드 · 소셜 루프) + UX 위계 5원칙 + 화면별 가이드라인 + 핵심 의사결정 사항 +
-          3-Phase 로드맵 + 열린 질문 7가지. 팀원 온보딩 레퍼런스로 활용 가능.
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <a class="doc-card" href="https://github.com/yonghyoung-ctrl/claude_UX_vora/blob/main/vora-information-architecture.md" target="_blank">
+        <div class="doc-ico">📘</div>
+        <div class="doc-body">
+          <div class="doc-title">정보구조 &amp; UX 원칙</div>
+          <div class="doc-desc">
+            제품 컨셉(3레이어 AI · 3모드 · 소셜 루프) + UX 위계 5원칙 + 화면별 가이드라인 + 핵심 의사결정 사항 +
+            3-Phase 로드맵 + 열린 질문 7가지. 팀원 온보딩 레퍼런스로 활용 가능.
+          </div>
         </div>
-      </div>
-      <div class="doc-cta">GitHub에서 열기 →</div>
-    </a>
+        <div class="doc-cta">GitHub에서 열기 →</div>
+      </a>
+
+      <a class="doc-card" href="https://github.com/yonghyoung-ctrl/claude_UX_vora/blob/main/vora-terminology.md" target="_blank" style="background: linear-gradient(135deg, rgba(138,80,255,0.08), rgba(96,165,250,0.04)); border-color: rgba(138,80,255,0.25);">
+        <div class="doc-ico" style="background: linear-gradient(135deg, rgba(138,80,255,0.28), rgba(96,165,250,0.15)); border-color: rgba(138,80,255,0.35);">📖</div>
+        <div class="doc-body">
+          <div class="doc-title">용어 사전 (Terminology)</div>
+          <div class="doc-desc">
+            VORA 전반의 용어 통일안. "AI 페르소나", "VORA 에이전트", "AI 능력", "라이브러리" 등 핵심 용어의 정의·사용 규칙·
+            화면별 체크리스트·ADR 의사결정 기록·EN/JA i18n 대응표 포함. UI 카피 리뷰의 기준.
+          </div>
+        </div>
+        <div class="doc-cta" style="color: #c5a4ff;">GitHub에서 열기 →</div>
+      </a>
+    </div>
   </section>
 
   <!-- ========== PRINCIPLES SNAPSHOT ========== -->
